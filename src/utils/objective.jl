@@ -1,14 +1,13 @@
 function objective(optimpars::Vector{<:Real}, resource, mode, raw_data, sequence, coordinates, coil_sensitivities, trajectory, transmit_field)
 
-    # We compute the residual rᵢ = ||d Σᵢ (dᵢ - M(T₁,T₂,B₁,B₀)*Cᵢ*ρ)
-    # f = (1/2) * |r|^2
+    # We compute the residual rᵢ = ||d Σᵢ (dᵢ - M(T₁,T₂,B₁,B₀)*Cᵢ*ρ) f = (1/2) * |r|^2
     # The gradient is computed as g = ℜ(Jᴴr)
 
-    # mode 0 -> compute f and r only
-    # mode 1 -> compute f, r and g
-    # mode 2 -> compute f, r, g and assemble approximate Hessian
+    # mode 0 -> compute f and r only mode 1 -> compute f, r and g mode 2 -> compute f, r, g
+    # and assemble approximate Hessian
 
-    # Convert optimpars (Vector{<:Real}) to Vector{<:AbstractTissueParameters} to be used in simulations
+    # Convert optimpars (Vector{<:Real}) to Vector{<:AbstractTissueParameters} to be used in
+    # simulations
     parameters = optim_to_physical_pars(optimpars, transmit_field)
 
     # Convert to single precision and send to gpu device
@@ -89,7 +88,9 @@ function objective(optimpars::Vector{<:Real}, resource, mode, raw_data, sequence
             v -> v, # adjoint operation not used
         length(g),length(g));
 
-        return f, r, g, H
+        H⁻¹_approx = block_diagonal_inverse_approximation(resource, echos, ∂echos, parameters, coil_sensitivities_svec, trajectory, coordinates)
+
+        return f, r, g, H, H⁻¹_approx
     end
 end
 

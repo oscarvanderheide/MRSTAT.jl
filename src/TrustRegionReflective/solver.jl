@@ -35,7 +35,7 @@ function solver(objective, x0, LB, UB, options::SolverOptions, plotfun)
 
         if iter > 1
         println("    Calling f,r,g,H = objective(x,2)")
-        f,r,g,H = objective(x,2);
+        f,r,g,H, H⁻¹_approx = objective(x,2);
         end
 
         println("    f: $(f)", )
@@ -47,7 +47,12 @@ function solver(objective, x0, LB, UB, options::SolverOptions, plotfun)
         D = sqrt.(v);
         ĝ = D .* g;
         C = dv .* g;
-        Ĥ = x -> (D .* (H * (D.*x))) + (C .* x)
+        if options.use_C  
+            Ĥ = x -> (D .* (H * (D.*x))) + (C .* x)
+        else
+            Ĥ = x -> D .* (H * (D.*x))
+        end
+        D⁻¹ = inv.(D)
 
         step_accepted = false
         perform_steihaug = true
@@ -58,7 +63,8 @@ function solver(objective, x0, LB, UB, options::SolverOptions, plotfun)
         while !step_accepted
 
             # Compute potential step using Steihaug
-            P = y -> y; # Preconditioner, currently not used
+            # Set preconditioner
+            P = y -> D⁻¹ .* (H⁻¹_approx * (D⁻¹ .* y)) ; 
             z0 = zeros(length(ĝ));
             if perform_steihaug
                 steps = steihaug(Ĥ, ĝ, Δ, P, options.max_iter_steihaug, options.tol_steihaug, z0)

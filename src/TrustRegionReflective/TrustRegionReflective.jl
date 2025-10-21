@@ -14,6 +14,7 @@ using TickTock
     tol_steihaug::T = 0.1
     init_scale_radius::T = 0.1
     save_every_iter::B = false
+    use_C::B = true
 end
 
 mutable struct SolverOutput

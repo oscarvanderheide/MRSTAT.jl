@@ -23,4 +23,4 @@ TickTock = "9ff05d80-102d-5586-aa04-3a8bd1a90d20"
 
 [compat]
 BlochSimulators = "0.6.4"
-julia = "1.10"
+julia = "1"
