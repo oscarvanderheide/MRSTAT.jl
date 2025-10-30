@@ -18,6 +18,8 @@ module DerivativeOperations
     include("Jv.jl")
     include("Jhv.jl")
 
+    include("JJdiags.jl")
+
     @inline global_id() = (blockIdx().x - 1) * blockDim().x + threadIdx().x
     const THREADS_PER_BLOCK = 64
 

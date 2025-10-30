@@ -88,7 +88,15 @@ function objective(optimpars::Vector{<:Real}, resource, mode, raw_data, sequence
             v -> v, # adjoint operation not used
         length(g),length(g));
 
-        H⁻¹_approx = block_diagonal_inverse_approximation(resource, echos, ∂echos, parameters, coil_sensitivities_svec, trajectory, coordinates)
+        H⁻¹_approx = DerivativeOperations.make_H⁻¹_approx(
+            resource,
+            echos,
+            ∂echos,
+            parameters,
+            trajectory,
+            coil_sensitivities,
+            coordinates
+        )
 
         return f, r, g, H, H⁻¹_approx
     end
