@@ -1,4 +1,7 @@
 .vscode
 .CondaPkg
-.git
+.DS_Store
+*.out
+*.err
+.git_old_worktree
 # Manifest.toml
